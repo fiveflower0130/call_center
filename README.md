@@ -6,3 +6,7 @@ What we would like to see:
 2. Do this in an object-oriented programming language that you're comfortable with.
 3. Compliable runnable and testable code.
 4. Document your code.
+
+# flow
+![messageImage_1618854535675](https://user-images.githubusercontent.com/56527927/115284396-38280f00-a17f-11eb-88a7-c71829f91b2f.jpg)
+
