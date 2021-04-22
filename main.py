@@ -10,16 +10,16 @@ class PM(object):
         self.pm_level = LEVEL
 
     def process_call(self):
-        for mission in range(len(pm_call_list)):
+        for customer in range(len(pm_call_list)):
             print("PM processed call")
-            cancel_pm_call_list(mission)
+            cancel_pm_call_list(customer)
 
-    def register_pm_call_list(self, mission):
-        self.pm_call_list.append(mission)
+    def register_pm_call_list(self, customer):
+        self.pm_call_list.append(customer)
         self.pm_work_status = True
 
-    def cancel_pm_call_list(self, mission):
-        self.pm_call_list.remove(mission)
+    def cancel_pm_call_list(self, customer):
+        self.pm_call_list.remove(customer)
         if len(self.pm_call_list) == 0:
             self.pm_work_status = False
 
@@ -32,9 +32,9 @@ class TL(object):
         self.tl_level = LEVEL
 
     def process_call(self):
-        for mission in range(len(self.tl_call_list)):
+        for customer in range(len(self.tl_call_list)):
             print("TL processed call")
-            cancel_tl_call_list(mission)
+            cancel_tl_call_list(customer)
             # if mission <= 2  and work_status == False:
             #     print("TL processed call")
             #     cancel_tl_call_list(mission)
@@ -44,12 +44,12 @@ class TL(object):
             #     return mission
                 
         
-    def register_tl_call_list(self, mission):
-        self.tl_call_list.append(mission)
+    def register_tl_call_list(self, customer):
+        self.tl_call_list.append(customer)
         self.tl_work_status = True
 
-    def cancel_tl_call_list(self, mission):
-        self.tl_call_list.remove(mission)
+    def cancel_tl_call_list(self, customer):
+        self.tl_call_list.remove(customer)
         if len(self.tl_call_list) == 0:
             self.tl_work_status = False
 
@@ -68,14 +68,6 @@ class EP(object):
     def process_call(self):
         print("EP processed call")
 
-    # def register_ep_call_list(self, mission):
-    #     self.ep_call_list.append(mission)
-    #     self.ep_work_status = True
-
-    # def cancel_pm_call_list(self, mission):
-    #     self.ep_call_list.remove(mission)
-    #     if len(self.ep_call_list) == 0:
-    #         self.ep_self.work_status = False
 
 class Customer(object):
     ID = None
@@ -124,16 +116,61 @@ class Center(object):
         else:
             return val
 
+    def enter_customers(self):
+        """Function to get all customers from class list."""
+        for customer in customers_call_list:
+            if customer.LEVEL < self.tl.LEVEL:
+                # muti process by ep
+                self.customers_call_list.remove(customer)
+            else:
+                if customer.LEVEL < self.pm.LEVEL:
+                    self.tl.register_tl_call_list(customer)
+                    self.customers_call_list.remove(customer)
+                else:
+                    self.pm.register_tl_call_list(customer)
+                    self.customers_call_list.remove(customer)
+
+    def run(self):
+        """Core step function. Every time when called:
+        - awaiting customers enter the elevator (register_customer is called)
+        - the elevator direction value (+/-1) is chosen
+        - elevator moves one floor up or one floor down, depending on direction value
+        - any customer on his/hers floor leaves the elevator (cancel_customer is called)
+        """
+
+        self.enter_customers()
+        if self.strategy == 0:
+            self.direction_default_strategy()
+        else:
+            self.direction_bad_strategy()
+        self.elevator.move()
+        self.elevator.exit_customers()
+
+    def output(self):
+        """Returns total number of steps done by call center in set strategy."""
+        total_number = 0
+        while self.awaiting_customers():
+            self.run()
+            total_number += 1
+        return total_number
+
+    def awaiting_customers(self):
+        """returns True if there is at least one customer not on process. Otherwise returns False."""
+        if len(self.customers_call_list) > 0:
+            return True
+        return False
+
 
 def main():
     """main function"""
 
     call_center = Center()
-    for i in range(len(call_center.employee_list)):
-        print(call_center.employee_list[i])
+    print(call_center.output())
+    # for i in range(len(call_center.employee_list)):
+    #     print(call_center.employee_list[i])
     
-    for i in range(len(call_center.customers_call_list)):
-        print(call_center.customers_call_list[i])
+    # for i in range(len(call_center.customers_call_list)):
+    #     print(call_center.customers_call_list[i])
 
 
 if __name__ == "__main__":
