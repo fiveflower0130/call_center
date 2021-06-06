@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import random
 import threading
+import time
 
 class PM(object):
     pm_call_list = []
@@ -64,9 +65,10 @@ class EP(object):
         return str(self.__class__) + ": " + str(self.__dict__)
 
     def process_call(self, i):
-        for customer in self.ep_call_list:
-            print("EP"+str(i)+" processed customer id=" + str(customer.cus_id))
-            self.cancel_ep_call_list(customer)
+        if len(self.ep_call_list) > 0:
+            for customer in self.ep_call_list:
+                print("EP"+str(i)+" processed customer id=" + str(customer.cus_id))
+                self.cancel_ep_call_list(customer)
 
     def register_ep_call_list(self, customer):
         self.ep_call_list.append(customer)
@@ -135,7 +137,7 @@ class Center(object):
     def enter_customers(self):
         """Function to get all customers from class list."""
         for customer in self.customers_call_list:
-            print(customer)
+            print("customer call in.... ", customer)
             if customer.cus_level < self.tl.tl_level:
                 self.ep.register_ep_call_list(customer)
                 self.customers_call_list.remove(customer)
